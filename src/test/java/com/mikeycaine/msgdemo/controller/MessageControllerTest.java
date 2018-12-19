@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.assertj.core.util.Arrays;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -53,7 +51,7 @@ public class MessageControllerTest {
 		mvc.perform(post("/messageApi//createMessage").content("Message Number Two"))
 			.andExpect(status().is4xxClientError());
 	}
-	
+		
 	@Test
 	public void testWall() throws Exception {
 		mvc.perform(post("/messageApi/Fluff/createMessage").content("Fluff Message Number One"))
@@ -66,6 +64,12 @@ public class MessageControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[*].text").value(hasItems("Fluff Message Number One", "Fluff Message Number Two")))
 			.andDo(MockMvcResultHandlers.print());
+	}
+	
+	@Test
+	public void testWallForNonExistentUser() throws Exception {
+		mvc.perform(get("/messageApi/Billy/wall"))
+		.andExpect(status().isOk());
 	}
 	
 	@Test
@@ -145,16 +149,12 @@ public class MessageControllerTest {
 		List<String> timestamps = (List<String>)context.read("$[*].created");
 		assertThat(timestamps.size(), is(3));
 		
-		//System.out.println("GOT CONTENT: " + mvcResult.getResponse().getContentAsString());
-		
 		assertTrue(timestampsAreInOrder(timestamps));
 	}
 	
-	@Test
-	public void testTimelineForMissingUser() throws Exception {
-		mvc.perform(get("/messageApi/Donald/timeline"))
-		.andExpect(status().is4xxClientError());
-	}
-	
-
+//	@Test
+//	public void testTimelineForMissingUser() throws Exception {
+//		mvc.perform(get("/messageApi/Donald/timeline"))
+//		.andExpect(status().is4xxClientError());
+//	}
 }

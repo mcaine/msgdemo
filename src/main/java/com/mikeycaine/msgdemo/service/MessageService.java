@@ -55,8 +55,12 @@ public class MessageService {
 	public void createFollow(String userName, String followee) {
 		userRepository.findByName(userName).ifPresent(user -> {
 			userRepository.findByName(followee).ifPresent(other -> {
-				user.getFollowing().add(other);
-				userRepository.save(user);
+				if (user.getFollowing().contains(other)) {
+					logger.info(userName + " is already following " + other);
+				} else {
+					user.getFollowing().add(other);
+					userRepository.save(user);
+				}
 			});
 		});
 	}
@@ -64,12 +68,12 @@ public class MessageService {
 	public List<Message> timelineFor(String userName) {
 		 Optional<User> optUser = userRepository.findByName(userName);
 		 User user = optUser.get();
-		 Set<User> followees = user.getFollowing();
+//		 Set<User> followees = user.getFollowing();
+//		 
+//		 List<User> them = new ArrayList<>();
+//		 them.addAll(followees);
 		 
-		 List<User> them = new ArrayList<>();
-		 them.addAll(followees);
-		 
-		return them.stream().flatMap((User followee) -> followee.getMessages().stream())
+		return user.getFollowing().stream().flatMap((User followee) -> followee.getMessages().stream())
 			.sorted(Comparator.comparing(Message::getCreated).reversed())
 			.collect(Collectors.toList());
 		
