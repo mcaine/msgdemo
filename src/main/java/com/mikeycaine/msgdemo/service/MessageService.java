@@ -18,8 +18,9 @@ public class MessageService {
 	
 	Logger logger = LoggerFactory.getLogger(MessageService.class);
 	
-	private UserRepository userRepository;
-	private MessageRepository messageRepository;
+	private final UserRepository userRepository;
+	private final MessageRepository messageRepository;
+	private final Comparator<Message> REVERSE_CHRONOLOGICAL = Comparator.comparing(Message::getCreated).reversed();
 	
 	public MessageService(UserRepository userRepository, MessageRepository messageRepository) {
 		this.userRepository = userRepository;
@@ -41,33 +42,30 @@ public class MessageService {
 	}
 	
 	public List<Message> wallFor(String userName) {
-		User user = userRepository.findByName(userName).orElseThrow(() -> new UserNotFoundException());
-		
-		return user.getMessages()
-				.stream()
-				.sorted(Comparator.comparing(Message::getCreated).reversed())
-				.collect(Collectors.toList());
+		return userRepository
+			.findByName(userName).orElseThrow(() -> new UserNotFoundException())
+			.getMessages()
+			.stream()
+			.sorted(REVERSE_CHRONOLOGICAL)
+			.collect(Collectors.toList());
 	}
 	
-	public void createFollow(String userName, String followee) {
-		userRepository.findByName(userName).ifPresent(user -> {
-			userRepository.findByName(followee).ifPresent(other -> {
-				if (user.getFollowing().contains(other)) {
-					logger.info(userName + " is already following " + other);
-				} else {
-					user.getFollowing().add(other);
-					userRepository.save(user);
-				}
-			});
-		});
+	public void createFollow(String userName, String followeeName) {
+		User user = userRepository.findByName(userName).orElseThrow(() -> new UserNotFoundException());
+		User followee = userRepository.findByName(followeeName).orElseThrow(() -> new UserNotFoundException());
+		
+		if (user.getFollowing().stream().noneMatch(followed -> followed.getName().equals(userName))) {
+			user.getFollowing().add(followee);
+			userRepository.save(user);
+		}
 	}
 	
 	public List<Message> timelineFor(String userName) {
 		User user = userRepository.findByName(userName).orElseThrow(() -> new UserNotFoundException());
 		 
 		return user.getFollowing().stream()
-			.flatMap((User followee) -> followee.getMessages().stream())
-			.sorted(Comparator.comparing(Message::getCreated).reversed())
+			.flatMap(followee -> followee.getMessages().stream())
+			.sorted(REVERSE_CHRONOLOGICAL)
 			.collect(Collectors.toList());
 	}
 }
