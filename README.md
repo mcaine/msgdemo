@@ -9,6 +9,7 @@ mvn clean package
 ## Running
 
 java -jar target/msgdemo-0.0.1-SNAPSHOT.jar
+
 Application will run on port 8080.
 
 ## API
