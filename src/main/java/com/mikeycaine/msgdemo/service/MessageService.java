@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.mikeycaine.msgdemo.controller.MessageController;
 import com.mikeycaine.msgdemo.model.Message;
 import com.mikeycaine.msgdemo.model.User;
 import com.mikeycaine.msgdemo.repository.MessageRepository;
@@ -33,9 +32,10 @@ public class MessageService {
 	
 	public Message createMessage(String userName, String messageText) {
 		
+		// Create a new User if necessary
 		User user = userRepository.findByName(userName).orElseGet(() -> userRepository.save(new User(userName)));
 		
-		logger.info("User is " + user);
+		logger.debug("User is " + user);
 		
 		Message message = new Message();
 		message.setUser(user);
@@ -45,8 +45,9 @@ public class MessageService {
 	}
 	
 	public List<Message> wallFor(String userName) {
-		return userRepository.findByName(userName)
-				.map(user -> user.getMessages()).orElse(new ArrayList<Message>())
+		User user = userRepository.findByName(userName).orElseThrow(() -> new UserNotFoundException());
+		
+		return user.getMessages()
 				.stream()
 				.sorted(Comparator.comparing(Message::getCreated).reversed())
 				.collect(Collectors.toList());
@@ -66,17 +67,11 @@ public class MessageService {
 	}
 	
 	public List<Message> timelineFor(String userName) {
-		 Optional<User> optUser = userRepository.findByName(userName);
-		 User user = optUser.get();
-//		 Set<User> followees = user.getFollowing();
-//		 
-//		 List<User> them = new ArrayList<>();
-//		 them.addAll(followees);
+		User user = userRepository.findByName(userName).orElseThrow(() -> new UserNotFoundException());
 		 
-		return user.getFollowing().stream().flatMap((User followee) -> followee.getMessages().stream())
+		return user.getFollowing().stream()
+			.flatMap((User followee) -> followee.getMessages().stream())
 			.sorted(Comparator.comparing(Message::getCreated).reversed())
 			.collect(Collectors.toList());
-		
 	}
-
 }

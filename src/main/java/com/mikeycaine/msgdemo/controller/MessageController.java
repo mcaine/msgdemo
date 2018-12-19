@@ -1,7 +1,6 @@
 package com.mikeycaine.msgdemo.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.mikeycaine.msgdemo.model.Message;
-import com.mikeycaine.msgdemo.model.User;
-import com.mikeycaine.msgdemo.repository.MessageRepository;
-import com.mikeycaine.msgdemo.repository.UserRepository;
 import com.mikeycaine.msgdemo.service.MessageService;
 
 @RestController
@@ -36,6 +32,7 @@ public class MessageController {
 		@RequestBody String messageText) {
 		
 		logger.info("Creating message from User " + userName + ", with text '" + messageText + "'");
+		
 		Message message = messageService.createMessage(userName, messageText);
 		return new ResponseEntity(message, HttpStatus.OK);
 	}
@@ -49,7 +46,6 @@ public class MessageController {
 	
 	@PostMapping(value="/messageApi/{userName}/follow/{followee}")
 	public ResponseEntity follow(
-	//public void follow(
 		@PathVariable String userName,
 		@PathVariable String followee) {
 		messageService.createFollow(userName, followee);
@@ -61,10 +57,4 @@ public class MessageController {
 		List<Message> messages = messageService.timelineFor(userName);
 		return new ResponseEntity(messages, HttpStatus.OK);
 	}
-	
-	
-	
-	
-	
-
 }

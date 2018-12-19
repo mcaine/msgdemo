@@ -62,5 +62,4 @@ public class Message {
 	public User getUser() {
 		return user;
 	}
-
 }

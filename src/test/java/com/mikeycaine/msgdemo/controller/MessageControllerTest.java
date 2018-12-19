@@ -49,7 +49,7 @@ public class MessageControllerTest {
 	@Test
 	public void testPostMessageWithEmptyUserName() throws Exception {
 		mvc.perform(post("/messageApi//createMessage").content("Message Number Two"))
-			.andExpect(status().is4xxClientError());
+			.andExpect(status().isNotFound());
 	}
 		
 	@Test
@@ -69,7 +69,7 @@ public class MessageControllerTest {
 	@Test
 	public void testWallForNonExistentUser() throws Exception {
 		mvc.perform(get("/messageApi/Billy/wall"))
-		.andExpect(status().isOk());
+		.andExpect(status().isNotFound());
 	}
 	
 	@Test
@@ -152,9 +152,9 @@ public class MessageControllerTest {
 		assertTrue(timestampsAreInOrder(timestamps));
 	}
 	
-//	@Test
-//	public void testTimelineForMissingUser() throws Exception {
-//		mvc.perform(get("/messageApi/Donald/timeline"))
-//		.andExpect(status().is4xxClientError());
-//	}
+	@Test
+	public void testTimelineForMissingUser() throws Exception {
+		mvc.perform(get("/messageApi/Donald/timeline"))
+		.andExpect(status().isNotFound());
+	}
 }
