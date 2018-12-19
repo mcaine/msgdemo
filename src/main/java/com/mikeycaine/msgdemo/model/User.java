@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
@@ -24,11 +25,11 @@ public class User {
 	
 	private String name;
 	
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Message> messages = new ArrayList<>();
     
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
     	name = "follows",
     	joinColumns = @JoinColumn(name = "followed_id"),
@@ -121,7 +122,4 @@ public class User {
 			return false;
 		return true;
 	}
-	
-	
-	
 }

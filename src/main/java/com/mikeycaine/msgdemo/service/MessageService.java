@@ -31,14 +31,14 @@ public class MessageService {
 		
 		// Create a new User if necessary
 		User user = userRepository.findByName(userName).orElseGet(() -> userRepository.save(new User(userName)));
+//		
+//		logger.debug("User is " + user);
+//		
+//		Message message = ;
+//		message.setUser(user);
+//		message.setText(messageText);
 		
-		logger.debug("User is " + user);
-		
-		Message message = new Message();
-		message.setUser(user);
-		message.setText(messageText);
-		
-		return messageRepository.save(message);
+		return messageRepository.save(new Message(user, messageText));
 	}
 	
 	public List<Message> wallFor(String userName) {
