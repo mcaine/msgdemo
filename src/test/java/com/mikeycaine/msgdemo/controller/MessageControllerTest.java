@@ -76,6 +76,7 @@ public class MessageControllerTest {
 	public void testWallIsInReverseChronologicalOrder() throws Exception {
 		
 		for (int i = 1; i <= 10; ++i) {
+			Thread.sleep(10);
 			mvc.perform(post("/messageApi/Sophie/createMessage").content("Message " + i))
 			.andExpect(status().isOk());
 		}
@@ -83,8 +84,6 @@ public class MessageControllerTest {
 		MvcResult mvcResult = mvc.perform(get("/messageApi/Sophie/wall"))
 			.andExpect(status().isOk())
 			.andReturn();
-		
-		//System.out.println("GOT CONTENT: " + mvcResult.getResponse().getContentAsString());
 		
 		DocumentContext context = JsonPath.parse(mvcResult.getResponse().getContentAsString());
 		assertThat(context.read("$.length()"), is(10));
@@ -98,8 +97,8 @@ public class MessageControllerTest {
 	// Check that a List of timestamp strings are in chronologically reverse order ie from latest to earliest
 	private boolean timestampsAreInOrder(List<String> timestamps) {
 		return IntStream.range(0, timestamps.size() - 1).allMatch(idx -> { 
-			return LocalDateTime.parse(timestamps.get(idx))
-					.isAfter(LocalDateTime.parse(timestamps.get(idx + 1)));
+			return !LocalDateTime.parse(timestamps.get(idx))
+					.isBefore(LocalDateTime.parse(timestamps.get(idx + 1)));
 		});
 	}
 	
