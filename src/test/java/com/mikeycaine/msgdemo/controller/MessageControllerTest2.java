@@ -115,12 +115,12 @@ public class MessageControllerTest2 {
 	
 	@Test
 	public void test() throws Exception {
-		postMessage("Mike", "Hello from Mike");
-		postMessage("Mike", "Another message from Mike");
-		postMessage("Mike", "Yet Another message from Mike");
-		postMessage("Mike", "That Mike sure does love his Messages");
+		postMessage("James", "Hello from James");
+		postMessage("James", "Another message from James");
+		postMessage("James", "Yet Another message from James");
+		postMessage("James", "That James sure does love his Messages");
 		
-		List<Message> messages = getWallForUser("Mike");
+		List<Message> messages = getWallForUser("James");
 		assertNewestMessagesFirst(messages);
 	}
 	
@@ -128,41 +128,41 @@ public class MessageControllerTest2 {
 	public void testFollow() throws Exception {
 		postMessage("Fluff", "Fluff has something to say");
 		
-		postMessage("Mike", "Hello again from Mike");
+		postMessage("James", "Hello again from James");
 		
-		postMessage("Fran", "Hello from Fran");
-		postMessage("Fran", "Another message from Fran");
-		postMessage("Fran", "Yet Another message from Fran");
-		postMessage("Fran", "That Fran sure does love her Messages");
-		List<Message> messages = getWallForUser("Fran");
+		postMessage("Jasper", "Hello from Jasper");
+		postMessage("Jasper", "Another message from Jasper");
+		postMessage("Jasper", "Yet Another message from Jasper");
+		postMessage("Jasper", "That Jasper sure does love his Messages");
+		List<Message> messages = getWallForUser("Jasper");
 		assertNewestMessagesFirst(messages);
 		
-		messages = getTimelineForUser("Mike");
+		messages = getTimelineForUser("James");
 		assertTrue(messages.isEmpty());
 		
-		follow("Mike", "Fran");
-		messages = getTimelineForUser("Mike");
+		follow("James", "Jasper");
+		messages = getTimelineForUser("James");
 		assertNewestMessagesFirst(messages);
 		assertThat(messages.size(), is(4));
 		
 		postMessage("Sophie", "Sophie sticks his oar in");
 		
-		follow("Mike", "Sophie");
-		messages = getTimelineForUser("Mike");
+		follow("James", "Sophie");
+		messages = getTimelineForUser("James");
 		assertNewestMessagesFirst(messages);
 		assertThat(messages.size(), is(5));
 		
-		follow("Mike", "Fluff");
-		messages = getTimelineForUser("Mike");
+		follow("James", "Fluff");
+		messages = getTimelineForUser("James");
 		assertNewestMessagesFirst(messages);
 		assertThat(messages.size(), is(6));
 		
-		messages = getTimelineForUser("Fran");
+		messages = getTimelineForUser("Jasper");
 		assertTrue(messages.isEmpty());
 		
-		follow("Fran", "Fluff");
-		follow("Fran", "Sophie");
-		messages = getTimelineForUser("Fran");
+		follow("Jasper", "Fluff");
+		follow("Jasper", "Sophie");
+		messages = getTimelineForUser("Jasper");
 		assertThat(messages.size(), is(2));
 	}
 	
