@@ -1,5 +1,6 @@
 package com.mikeycaine.msgdemo.model;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
@@ -21,7 +22,8 @@ public class Message {
 	private String text;
 	
 	@CreationTimestamp
-	private LocalDateTime created;
+	//private LocalDateTime created;
+	private Instant created;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -56,7 +58,7 @@ public class Message {
 		this.text = text;
 	}
 
-	public LocalDateTime getCreated() {
+	public Instant getCreated() {
 		return created;
 	}
 	

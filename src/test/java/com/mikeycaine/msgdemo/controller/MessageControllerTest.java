@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,22 +97,43 @@ public class MessageControllerTest {
 	
 	// Check that a List of timestamp strings are in chronologically reverse order ie from latest to earliest
 	private boolean timestampsAreInOrder(List<String> timestamps) {
-		return IntStream.range(0, timestamps.size() - 1).allMatch(idx -> { 
-			return !LocalDateTime.parse(timestamps.get(idx))
-					.isBefore(LocalDateTime.parse(timestamps.get(idx + 1)));
-		});
+		if (timestamps.isEmpty()) {
+			return true;
+		}
+		
+		String prev = timestamps.get(0);
+		System.out.println("PREV: " + prev);
+		
+		Instant prevInstant = Instant.parse(prev);
+		
+		for (int i = 0; i < timestamps.size(); ++i) {
+			Instant thisInstant = Instant.parse(timestamps.get(i));
+			if (thisInstant.isAfter(prevInstant)) {
+				return false;
+			}
+		}
+		
+		return true;
+		
+//		return IntStream.range(0, timestamps.size() - 1).allMatch(idx -> { 
+//			return !LocalDateTime.parse(timestamps.get(idx))
+//					.isBefore(LocalDateTime.parse(timestamps.get(idx + 1)));
+//		});
 	}
 	
 	@Test
 	public void testTimeStampsAreInOrderHelper() {
 		List<String> inOrder = new ArrayList<>();
-		inOrder.add("2018-12-19T12:44:01.999");
-		inOrder.add("2018-12-19T12:44:01.001");
+		inOrder.add("2019-01-17T23:22:32.000Z");
+		inOrder.add("2019-01-17T23:21:32.000Z");
+		inOrder.add("2019-01-17T22:21:32.000Z");
 		assertTrue(timestampsAreInOrder(inOrder));
 		
 		List<String> outOfOrder = new ArrayList<>();
-		outOfOrder.add("2018-12-19T12:44:01.001");
-		outOfOrder.add("2018-12-19T12:44:01.999");
+		outOfOrder.add("2019-01-17T22:21:32.000Z");
+		outOfOrder.add("2019-01-17T23:21:32.000Z");
+		outOfOrder.add("2019-01-17T23:22:32.000Z");
+		
 		assertFalse(timestampsAreInOrder(outOfOrder));
 	}
 	
