@@ -63,9 +63,6 @@ public class MessageControllerTest2 {
 		.andExpect(status().isOk())
 		.andDo(result -> reply.set(result.getResponse().getContentAsString()));
 		
-//		String text = reply.get();
-//		System.out.println("Got content: " + text);
-		
 		List<Message> messages = parseWallReply(reply.get());
 		return messages;
 	}
@@ -77,25 +74,9 @@ public class MessageControllerTest2 {
 		.andExpect(status().isOk())
 		.andDo(result -> reply.set(result.getResponse().getContentAsString()));
 		
-//		String text = reply.get();
-//		System.out.println("Got content: " + text);
-		
 		List<Message> messages = parseWallReply(reply.get());
 		return messages;
 	}
-	
-//	private void checkWallForUser(String user) throws Exception {
-//		List<Message> messages = getWallForUser(user);
-//		
-////		messages.forEach(message -> {
-////			System.out.println("ID: " + message.getId());
-////			System.out.println("Text: " + message.getText());
-////			System.out.println("Created: " + message.getCreated());
-////			System.out.println();
-////		});
-//		
-//		assertNewestMessagesFirst(messages);
-//	}
 	
 	private void follow(String user, String followee) throws Exception {
 		mvc.perform(post("/messageApi/" + user + "/follow/" + followee)).andExpect(status().isOk());
@@ -173,24 +154,15 @@ public class MessageControllerTest2 {
 	@Test
 	public void testBigFollow() throws Exception {
 		for (int i = 1; i < 100; ++i) {
+			
 			String user = userName(i);
 			postMessage(user, "Hello from " + user);
 			
 			for (int j = i - 1; j > 0; --j) {
 				String followee = userName(j);
 				follow(user, followee);
-				//System.out.println(user + " follows " + followee);
 			}
 		}
-		
-		//List<Message> user001messages = getWallForUser("User001");
-		//user001messages.forEach(message -> System.out.println("USER001: " + message.getText()));
-		
-		//List<Message> user099messages = getWallForUser("User099");
-		//user099messages.forEach(message -> System.out.println("USER099: " + message.getText()));
-		
-		System.out.println("HERE I AM");
-		
 		
 		for (int i = 1; i < 100; ++i) {
 			String user = userName(i);
@@ -198,10 +170,5 @@ public class MessageControllerTest2 {
 			assertNewestMessagesFirst(timeline);
 			assertThat(timeline.size(), is(i - 1));
 		}
-		
-		//user099timeline.forEach(message -> System.out.println("TIMELINE: " + message.getText()));
-		//assertTrue(user099timeline.size() == 98);
-		
 	}
-
 }
