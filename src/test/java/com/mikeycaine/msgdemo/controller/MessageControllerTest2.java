@@ -50,10 +50,8 @@ public class MessageControllerTest2 {
 					.registerModule(new Jdk8Module())
 					.registerModule(new JavaTimeModule());
 			
-			TypeReference<List<Message>> typeReference = new TypeReference<List<Message>>(){};
-			
-			List<Message> messages = mapper.readValue(text, typeReference);
-			return messages;
+		TypeReference<List<Message>> typeReference = new TypeReference<List<Message>>(){};
+		return mapper.readValue(text, typeReference);
 	}
 	
 	private List<Message> getTimelineForUser(String user) throws Exception {
@@ -68,14 +66,11 @@ public class MessageControllerTest2 {
 	}
 	
 	private List<Message> getWallForUser(String user) throws Exception {
-		AtomicReference<String> reply = new AtomicReference<>();
-		
-		mvc.perform(get("/messageApi/" + user + "/wall"))
+		String replyContent = mvc.perform(get("/messageApi/" + user + "/wall"))
 		.andExpect(status().isOk())
-		.andDo(result -> reply.set(result.getResponse().getContentAsString()));
+		.andReturn().getResponse().getContentAsString();
 		
-		List<Message> messages = parseWallReply(reply.get());
-		return messages;
+		return parseWallReply(replyContent);
 	}
 	
 	private void follow(String user, String followee) throws Exception {
