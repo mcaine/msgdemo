@@ -101,10 +101,7 @@ public class MessageControllerTest {
 			return true;
 		}
 		
-		String prev = timestamps.get(0);
-		System.out.println("PREV: " + prev);
-		
-		Instant prevInstant = Instant.parse(prev);
+		Instant prevInstant = Instant.parse(timestamps.get(0));
 		
 		for (int i = 0; i < timestamps.size(); ++i) {
 			Instant thisInstant = Instant.parse(timestamps.get(i));
@@ -116,11 +113,6 @@ public class MessageControllerTest {
 		}
 		
 		return true;
-		
-//		return IntStream.range(0, timestamps.size() - 1).allMatch(idx -> { 
-//			return !LocalDateTime.parse(timestamps.get(idx))
-//					.isBefore(LocalDateTime.parse(timestamps.get(idx + 1)));
-//		});
 	}
 	
 	@Test
