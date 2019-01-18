@@ -111,6 +111,8 @@ public class MessageControllerTest {
 			if (thisInstant.isAfter(prevInstant)) {
 				return false;
 			}
+			
+			prevInstant = thisInstant;
 		}
 		
 		return true;
